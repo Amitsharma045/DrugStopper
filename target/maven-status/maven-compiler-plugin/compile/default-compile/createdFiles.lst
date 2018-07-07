@@ -1,0 +1,12 @@
+com\drugstopper\app\entity\ComplaintRegistration.class
+com\drugstopper\app\ApplicationInit.class
+com\drugstopper\app\entity\UserTable.class
+com\drugstopper\app\entity\OtpTransectionDetail.class
+com\drugstopper\app\entity\Category.class
+com\drugstopper\app\entity\Location.class
+com\drugstopper\app\dbconfig\DBConfiguration.class
+com\drugstopper\app\entity\AttachmentDetail.class
+com\drugstopper\app\entity\AttachmentType.class
+com\drugstopper\app\entity\JwtToken.class
+com\drugstopper\app\entity\LocationMapping.class
+com\drugstopper\app\entity\LoginUserType.class
