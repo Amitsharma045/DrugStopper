@@ -63,7 +63,7 @@ public class ComplaintRegistration extends BaseEntity  implements Serializable {
 	
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "CR_User", referencedColumnName = "id")
-	private UserTable user;
+	private User user;
 
 	public long getId() {
 		return id;
@@ -145,11 +145,11 @@ public class ComplaintRegistration extends BaseEntity  implements Serializable {
 		this.complaintDescription = complaintDescription;
 	}
 
-	public UserTable getUser() {
+	public User getUser() {
 		return user;
 	}
 
-	public void setUser(UserTable user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
 }

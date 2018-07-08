@@ -20,7 +20,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "User_Table")
-public class UserTable extends BaseEntity implements Serializable {
+public class User extends BaseEntity implements Serializable {
 
 	/**
 	 * 
@@ -39,7 +39,7 @@ public class UserTable extends BaseEntity implements Serializable {
 	private String userId;
 	
 	@Column(name = "UT_Active")
-	private boolean active;
+	private int active;
 	
 	@Column(name = "UT_LoginDate")
 	private Date loginDate;
@@ -74,11 +74,11 @@ public class UserTable extends BaseEntity implements Serializable {
 		this.userId = userId;
 	}
 
-	public boolean isActive() {
+	public int isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(int active) {
 		this.active = active;
 	}
 

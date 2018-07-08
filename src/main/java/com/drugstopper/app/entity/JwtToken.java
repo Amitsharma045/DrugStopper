@@ -38,7 +38,7 @@ public class JwtToken  implements Serializable{
 	private String refreshToken;
 	@ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "JWT_UserId", referencedColumnName = "id")
-	private UserTable user;
+	private User user;
 	
 	public long getId() {
 		return id;
@@ -59,10 +59,10 @@ public class JwtToken  implements Serializable{
 		this.refreshToken = refreshToken;
 	}
 
-	public UserTable getUser() {
+	public User getUser() {
 		return user;
 	}
-	public void setUser(UserTable user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
 	public String getAccessKey() {

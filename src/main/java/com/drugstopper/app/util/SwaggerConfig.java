@@ -13,7 +13,7 @@ public class SwaggerConfig {
     @Bean
     public Docket productApi() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .select().apis(RequestHandlerSelectors.basePackage("com.drugstopper.app.api"))
+                .select().apis(RequestHandlerSelectors.basePackage("com.drugstopper.app"))
                 .build();
     }
 }
