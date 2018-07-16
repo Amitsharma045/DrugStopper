@@ -15,14 +15,14 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationExceptio
 @Service
 public class ComplaintManager {
 
-	
+
 	@Autowired
 	private  ComplaintDAO complaintDAO;
-	
+
 	public ComplaintRegistration[] getAllComplaints(String complaintId) throws Exception {
 		return complaintDAO.getAllComplaints(complaintId);
 	}
-	
+
 	public ComplaintRegistration[] getComplaintsByState(String stateId, String id)  throws Exception {
 		return complaintDAO.getComplaintsByState(stateId, id);
 	}
@@ -62,6 +62,11 @@ public class ComplaintManager {
 			System.out.println(ex.getMessage());
 			return null; 
 		} 
+	}
+
+	public ComplaintRegistration getComplaint(String complaintId) throws Exception {
+
+		return complaintDAO.getComplaint(complaintId);
 	}
 
 }

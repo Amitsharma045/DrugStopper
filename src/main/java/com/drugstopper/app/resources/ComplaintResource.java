@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -251,6 +252,21 @@ public class ComplaintResource  extends RestResource {
 		return sendResponse(jsonResponse);
 	}
 	
+	@RequestMapping(value = "/v1.0/getComplaint/{complaintId}", produces={"application/json"},
+			consumes={"application/x-www-form-urlencoded"},
+			method = RequestMethod.GET)
+	@ResponseBody
+	public HashMap<String,Object> fetchComplaintDetail(@PathVariable("complaintId") String complaintId) throws Exception {
+		jsonResponse=new JsonResponse();
+		ComplaintRegistration complaint = complaintManager.getComplaint(complaintId); 
+		List<AttachmentDetail> attachmentDetail = (List<AttachmentDetail>) attachmentManager.getAttachments(complaint.getComplaintId());
+		jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
+		jsonResponse.setMessage(ConstantProperty.SUCCESSFUL_PROCESSED);
+		jsonResponse.setComplaint(getComplaint(complaint));
+		jsonResponse.setAttachmentBean(getAttachmentBeanFromDetail(attachmentDetail));  
+		return sendResponse(jsonResponse);
+	}  
+	
 	@RequestMapping(value = "/v1.0/getByDistrict/nextList", produces={"application/json"},
 			consumes={"multipart/form-data"},
 			method = RequestMethod.POST)
@@ -349,6 +365,19 @@ public class ComplaintResource  extends RestResource {
 		return sendResponse(jsonResponse);
 	}
 	
+	
+	private ComplaintBean getComplaint(ComplaintRegistration registration) throws Exception {
+		ComplaintBean complaintBean = new ComplaintBean();
+		complaintBean.setId(registration.getId());
+		complaintBean.setComplaintId(registration.getComplaintId());
+		complaintBean.setComplaintAgainst(registration.getComplaintAgainst());
+		complaintBean.setDate(registration.getDate());
+		complaintBean.setState(registration.getState().getName());
+		complaintBean.setDistrict(registration.getDistrict().getName());
+		complaintBean.setCity(registration.getCity().getName());
+		return complaintBean;
+	}
+	
 	@RequestMapping(value = "/v1.0/searchComplaintAgainst", produces={"application/json"},
 			consumes={"application/x-www-form-urlencoded"},
 			method = RequestMethod.GET)
@@ -435,17 +464,7 @@ public class ComplaintResource  extends RestResource {
 		return complaintlist.toArray(new ComplaintBean[complaintlist.size()]);
 	}
 	
-	private ComplaintBean getComplaint(ComplaintRegistration registration) throws Exception {
-		ComplaintBean complaintBean = new ComplaintBean();
-		complaintBean.setId(registration.getId());
-		complaintBean.setComplaintId(registration.getComplaintId());
-		complaintBean.setComplaintAgainst(registration.getComplaintAgainst());
-		complaintBean.setDate(registration.getDate());
-		complaintBean.setState(registration.getState().getName());
-		complaintBean.setDistrict(registration.getDistrict().getName());
-		complaintBean.setCity(registration.getCity().getName());
-		return complaintBean;
-	}
+	
 	
 	public List<AttachmentBean> getAttachmentBeanFromDetail(List<AttachmentDetail> attachments) throws Exception {
 		List<AttachmentBean> attachmentBeans = new ArrayList<>();
@@ -459,5 +478,6 @@ public class ComplaintResource  extends RestResource {
 		}
 		return attachmentBeans;
 	}
+	
 
 }
