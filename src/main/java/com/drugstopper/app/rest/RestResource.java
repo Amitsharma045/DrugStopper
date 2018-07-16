@@ -28,18 +28,24 @@ public abstract class RestResource {
 			json.put(ConstantProperty.COMPLAINTS, jsonResponse.getComplaint());
 		if(jsonResponse.getComplaintList()!=null)
 			json.put(ConstantProperty.COMPLAINT_LIST, jsonResponse.getComplaintList());
+		if(jsonResponse.getLocation()!=null)
+			json.put(ConstantProperty.LOCATIONS, jsonResponse.getLocation());
+		if(jsonResponse.getLocationList()!=null)
+			json.put(ConstantProperty.LOCATION_LIST, jsonResponse.getLocationList());
+		if(jsonResponse.getCategoryList()!=null)
+			json.put(ConstantProperty.CATEGORY_LIST, jsonResponse.getCategoryList());
 		if(jsonResponse.getActionRequired()!=null)
 			json.put(ConstantProperty.ACTION_REQUIRED, jsonResponse.getActionRequired());
 		if(jsonResponse.getTotalCounts()!=null)
 			json.put(ConstantProperty.TOTAL_COUNT, jsonResponse.getTotalCounts());
-
-		return json;
+		if(jsonResponse.getAttachmentBean()!=null) {
+			json.put(ConstantProperty.ATTACHMENT_LIST, jsonResponse.getAttachmentBean());
+		}
+		return json; 
 	}
 	
 	protected boolean isUserAdmin() {
-		System.out.println(request_);
 		String role = request_.getAttribute("role").toString();
-		System.out.println("User Role is"+role);
 		if("Admin".equals(role)) return true;
 		return false;
 	}

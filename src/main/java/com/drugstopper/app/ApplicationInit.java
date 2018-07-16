@@ -15,3 +15,4 @@ public class ApplicationInit {
 		SpringApplication.run(ApplicationInit.class, args);
 	}
 }
+ 

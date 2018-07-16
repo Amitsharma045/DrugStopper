@@ -24,20 +24,17 @@ public class JwtTokenDAO {
 		return sessionFactory.getCurrentSession();
 	}
 	
-	public Long createAccessAndRefreshToken(User user, String accessToken, String accessKey, 
-			String refreshToken, String refreshKey) throws Exception 
+	public Long createAccessToken(User user, String accessToken, String accessKey) throws Exception 
 	{
 		JwtToken jwt = new JwtToken();
 		jwt.setAccessKey(accessKey);
 		jwt.setAccessToken(accessToken);
-		jwt.setRefreshKey(refreshKey);
-		jwt.setRefreshToken(refreshToken);
 		jwt.setUser(user);
 
 		Long id=(Long) getSession().save(jwt);
 		return id;
 	}
-	
+	@Deprecated
 	public int updateAccessToken(String accessKey, String accessToken,
 								  String refreshToken) throws Exception 
 	{
@@ -62,5 +59,20 @@ public class JwtTokenDAO {
 		return null;
 
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Deprecated	
+	public boolean isTokenExsit(String accessToken, String refreshToken) {
+		List<JwtToken> jwtTokenList=getSession()
+				.createQuery("from JwtToken jt where jt.accessToken=:p1 and jt.refreshToken =:p2")
+				.setParameter("p1", accessToken).setParameter("p2", refreshToken).list();
+
+		if(jwtTokenList.size()!=0){
+			return true;
+		}
+		return false;
+
+	}
+	
 
 }

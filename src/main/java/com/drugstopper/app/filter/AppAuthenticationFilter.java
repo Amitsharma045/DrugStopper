@@ -23,7 +23,7 @@ import com.drugstopper.app.util.CommonUtil;
 
 import io.jsonwebtoken.Claims;
 
-@WebFilter(urlPatterns = "/api/*")
+@WebFilter(urlPatterns = "/drugstopper/api/*")
 public class AppAuthenticationFilter implements Filter {
  
 	@Autowired
@@ -49,11 +49,6 @@ public class AppAuthenticationFilter implements Filter {
 		try {
 			if(jwt!=null){
 				Claims claims = JwtUtil.parseJwtToken(token, jwt.getAccessKey());
-				if(!JwtUtil.validateAccessToken(claims.getExpiration())){
-					String accessKey = JwtUtil.getRandomSecretKey();
-				    String accessToken = JwtTokenFactory.createAccessJwtToken(claims.getSubject(), claims.get("Role").toString(), accessKey);
-				    jwtTokenManager.updateAccessToken(accessKey,accessToken, refreshToken);
-				}
 				appUserId=claims.getSubject();
 				role = claims.get("role").toString();
 			}
@@ -68,7 +63,7 @@ public class AppAuthenticationFilter implements Filter {
         }
         else{
         	// generate the new refresh token
-        	 abortWithErrorStatus(httpservletResponse, HttpServletResponse.SC_UNAUTHORIZED, "Token Expired");
+        	 abortWithErrorStatus(httpservletResponse, HttpServletResponse.SC_UNAUTHORIZED, "InValid Token");
         	return;
         }
 

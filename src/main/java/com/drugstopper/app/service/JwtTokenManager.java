@@ -13,16 +13,11 @@ public class JwtTokenManager {
 	@Autowired
 	private  JwtTokenDAO jwtTokenDAO;
 	
-	public Long createAccessAndRefreshToken(User user, String accessToken, String accessKey, 
-			String refreshToken, String refreshKey) throws Exception {
-		return jwtTokenDAO.createAccessAndRefreshToken(user, accessToken, accessKey, refreshToken, refreshKey);
+	public Long createAccessToken(User user, String accessToken, String accessKey) throws Exception {
+		return jwtTokenDAO.createAccessToken(user, accessToken, accessKey);
 	}
 	
 	public JwtToken getJwtTokenByAccessToken(String accessToken) {
 		return jwtTokenDAO.getJwtTokenByAccessToken(accessToken);
-	}
-	
-	public int updateAccessToken(String accessKey, String accessToken, String refreshToken) throws Exception {
-		return jwtTokenDAO.updateAccessToken(accessKey, accessToken, refreshToken);
 	}
 }

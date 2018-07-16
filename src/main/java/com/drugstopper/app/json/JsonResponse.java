@@ -1,6 +1,11 @@
 package com.drugstopper.app.json;
 
-import com.drugstopper.app.entity.ComplaintRegistration;
+import java.util.List;
+
+import com.drugstopper.app.bean.AttachmentBean;
+import com.drugstopper.app.bean.ComplaintBean;
+import com.drugstopper.app.bean.LocationBean;
+import com.drugstopper.app.entity.Category;
 import com.drugstopper.app.entity.User;
 
 public class JsonResponse {
@@ -10,10 +15,16 @@ public class JsonResponse {
 	private String accessToken;
 	private String refreshToken;
 	private User user ;
-	private ComplaintRegistration complaint;
-	private ComplaintRegistration[] complaintList;
+	private ComplaintBean complaint;
+	private ComplaintBean[] complaintList;
+	private List<AttachmentBean> attachmentBean;
+	private LocationBean location;
+	private LocationBean[] locationList;
+	private Category[] categoryList;
 	private String actionRequired;
 	private String totalCounts;
+	private String[] titleList;
+
 	public String getStatusCode() {
 		return statusCode;
 	}
@@ -45,17 +56,24 @@ public class JsonResponse {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	public ComplaintRegistration getComplaint() {
+
+	public ComplaintBean getComplaint() {
 		return complaint;
 	}
-	public void setComplaint(ComplaintRegistration complaint) {
+	public void setComplaint(ComplaintBean complaint) {
 		this.complaint = complaint;
 	}
-	public ComplaintRegistration[] getComplaintList() {
+	public ComplaintBean[] getComplaintList() {
 		return complaintList;
 	}
-	public void setComplaintList(ComplaintRegistration[] complaintList) {
+	public void setComplaintList(ComplaintBean[] complaintList) {
 		this.complaintList = complaintList;
+	}
+	public Category[] getCategoryList() {
+		return categoryList;
+	}
+	public void setCategoryList(Category[] categoryList) {
+		this.categoryList = categoryList;
 	}
 	public String getActionRequired() {
 		return actionRequired;
@@ -68,6 +86,30 @@ public class JsonResponse {
 	}
 	public void setTotalCounts(String totalCounts) {
 		this.totalCounts = totalCounts;
+	}
+	public LocationBean getLocation() {
+		return location;
+	}
+	public void setLocation(LocationBean location) {
+		this.location = location;
+	}
+	public LocationBean[] getLocationList() {
+		return locationList;
+	}
+	public void setLocationList(LocationBean[] locationList) {
+		this.locationList = locationList;
+	}
+	public String[] getTitleList() {
+		return titleList;
+	}
+	public void setTitleList(String[] titleList) {
+		this.titleList = titleList;
+	}
+	public List<AttachmentBean> getAttachmentBean() {
+		return attachmentBean;
+	}
+	public void setAttachmentBean(List<AttachmentBean> attachmentBean) {
+		this.attachmentBean = attachmentBean;
 	}
 
 

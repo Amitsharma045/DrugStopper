@@ -17,7 +17,6 @@ import javax.persistence.Table;
  *
  */
 
-
 @Entity
 @Table(name = "Attachment_Detail")
 public class AttachmentDetail extends BaseEntity implements Serializable {
@@ -32,12 +31,11 @@ public class AttachmentDetail extends BaseEntity implements Serializable {
 	private long id;
 
 	@ManyToOne(cascade = CascadeType.DETACH)
-	@JoinColumn(name = "AD_ComplaintReferenceId", referencedColumnName = "id")
+	@JoinColumn(name = "AD_ComplaintReferenceId", referencedColumnName = "CR_ComplaintId")
 	private ComplaintRegistration complaintReferenceId;
 	
-	@ManyToOne(cascade = CascadeType.DETACH)
-	@JoinColumn(name = "AD_AttachmentTypeId", referencedColumnName = "id")
-	private AttachmentType attachmentType;
+	@Column(name = "Attachment_Type")
+	private String attachmentType;
 
 	@Column(name = "AD_Name")
 	private String name;
@@ -58,11 +56,11 @@ public class AttachmentDetail extends BaseEntity implements Serializable {
 		this.complaintReferenceId = complaintReferenceId;
 	}
 
-	public AttachmentType getAttachmentType() {
+	public String getAttachmentType() {
 		return attachmentType;
 	}
 
-	public void setAttachmentType(AttachmentType attachmentType) {
+	public void setAttachmentType(String attachmentType) {
 		this.attachmentType = attachmentType;
 	}
 

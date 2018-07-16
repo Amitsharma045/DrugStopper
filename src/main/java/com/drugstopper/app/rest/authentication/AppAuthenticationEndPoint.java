@@ -24,11 +24,12 @@ import com.drugstopper.app.service.AuthenticationManager;
 import com.drugstopper.app.service.JwtTokenManager;
 import com.drugstopper.app.service.LoginUserTypeManager;
 import com.drugstopper.app.service.OtpDetailManager;
+import com.drugstopper.app.smsapi.sendSMS;
 
 
 
 @Controller
-@RequestMapping(value = "/drugStopper/authentication")
+@RequestMapping(value = "/authentication")
 public class AppAuthenticationEndPoint extends RestResource{
 	
 	@Autowired
@@ -52,28 +53,16 @@ public class AppAuthenticationEndPoint extends RestResource{
 	public HashMap<String,Object> authenticateUser(HttpServletRequest request) throws Exception {
 		String phoneNumber=request.getParameter(ConstantProperty.MOBILE_NUMBER);
 		jsonResponse=new JsonResponse();
-		if(phoneNumber==null || (phoneNumber.length() != 10)) {
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			return sendResponse(jsonResponse);
-		}
-		try {
-			Long.parseLong(phoneNumber);
-		} catch (Exception ex) {
-			System.out.println(ex);
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			return sendResponse(jsonResponse);
-		}
+
 		String otp=CommonUtil.getRandomOtp();
 		OtpTransectionDetail otpTransectionDetails=getOtpDetail(phoneNumber, otp);
 		Long id=otpDetailManager.saveOtpDetails(otpTransectionDetails);
 		if(id!=null){
 			jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
 			jsonResponse.setMessage(ConstantProperty.OTP_SENT);
-			String messageBody="complaintBox code: "+otp+". Do not share it or"
+			String messageBody="Silent Reaction OTP Verification Code: "+otp+". Do not share it or"
 					+ " use it elsewhere ";
-			//sendSMS.sendSms(phoneNumber, messageBody);
+//			sendSMS.sendSms(phoneNumber, messageBody);
 		}
 		else{
 			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
@@ -109,16 +98,11 @@ public class AppAuthenticationEndPoint extends RestResource{
 				String accessKey = JwtUtil.getRandomSecretKey();
 				String accessToken = JwtTokenFactory.createAccessJwtToken(String.valueOf(user.getId()), user.getUserType().getLoginType(), accessKey);
 
-				String refreshKey = JwtUtil.getRandomSecretKey();
-				String refreshToken = JwtTokenFactory.createRefreshJwtToken(String.valueOf(user.getId()), user.getUserType().getLoginType(), refreshKey);
-
-				Long id = jwtTokenManager.createAccessAndRefreshToken(user, accessToken, accessKey, refreshToken,
-						refreshKey);
+				Long id = jwtTokenManager.createAccessToken(user, accessToken, accessKey);
 				if (id != null) {
 					jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
 					jsonResponse.setMessage(ConstantProperty.SUCCESSFUL_AUTHENTICATION);
 					jsonResponse.setAccessToken(accessToken);
-					jsonResponse.setRefreshToken(refreshToken);
 				}
 			} else {
 				jsonResponse.setStatusCode(ConstantProperty.OTP_EXPIRED);
@@ -131,6 +115,7 @@ public class AppAuthenticationEndPoint extends RestResource{
 		return sendResponse(jsonResponse);
 
 	}
+
 
 	private boolean ValidateOtpExpiryTime(OtpTransectionDetail otpTransectionDetails){
 		Date currentDate=CommonUtil.getCurrentDate();

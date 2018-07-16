@@ -2,7 +2,6 @@ package com.drugstopper.app.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +19,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Complaint_Registration")
-public class ComplaintRegistration extends BaseEntity  implements Serializable {
+public class ComplaintRegistration extends BaseEntity implements Serializable {
 
 	/**
 	 * 
@@ -31,7 +30,7 @@ public class ComplaintRegistration extends BaseEntity  implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column(name = "CR_ComplaintId")
+	@Column(name = "CR_ComplaintId", unique=true)
 	private String complaintId;
 	
 	@Column(name = "CR_Date")
@@ -64,7 +63,7 @@ public class ComplaintRegistration extends BaseEntity  implements Serializable {
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "CR_User", referencedColumnName = "id")
 	private User user;
-
+	
 	public long getId() {
 		return id;
 	}
@@ -152,4 +151,13 @@ public class ComplaintRegistration extends BaseEntity  implements Serializable {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+	@Override
+	public String toString() {
+		return "ComplaintRegistration [id=" + id + ", complaintId=" + complaintId + ", date=" + date + ", state="
+				+ state + ", district=" + district + ", city=" + city + ", address=" + address + ", complaintTitle="
+				+ complaintTitle + ", complaintAgainst=" + complaintAgainst + ", complaintDescription="
+				+ complaintDescription + ", user=" + user + "]";
+	}
+	
 }

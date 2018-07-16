@@ -19,8 +19,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Location")
-public class Location extends BaseEntity  implements Serializable {
-
+public class Location implements Serializable {
 	/**
 	 * 
 	 */
@@ -37,6 +36,15 @@ public class Location extends BaseEntity  implements Serializable {
 	@JoinColumn(name = "LT_CategoryId", referencedColumnName = "id")
 	private Category category;
 
+	@Column(name ="LT_ShortName")
+	private String shortName;
+	
+	public String getShortName() {
+		return shortName;
+	}
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
 	public long getId() {
 		return id;
 	}
