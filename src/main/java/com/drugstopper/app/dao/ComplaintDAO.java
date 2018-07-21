@@ -62,8 +62,8 @@ public class ComplaintDAO {
 		if(complaintId.equals("0")) {
 			query = "FROM ComplaintRegistration cr WHERE cr.district.id =:p1 ORDER BY cr.id DESC";
 		}
-		Query querySql = getSession().createQuery(query).setParameter("p2", Long.valueOf(districtId));
-		if(!complaintId.equals("0")) querySql.setParameter("p1", Long.parseLong(complaintId));
+		Query querySql = getSession().createQuery(query).setParameter("p1", Long.valueOf(districtId));
+		if(!complaintId.equals("0")) querySql.setParameter("p2", Long.parseLong(complaintId));
 		
 		List<ComplaintRegistration> complaintList =querySql.setFirstResult(0).setMaxResults(10).list();
 		return complaintList.toArray(new ComplaintRegistration[complaintList.size()]);
@@ -75,8 +75,8 @@ public class ComplaintDAO {
 		if(complaintId.equals("0")) {
 			query = "FROM ComplaintRegistration cr WHERE cr.city.id =:p1 ORDER BY cr.id DESC";
 		}
-		Query querySql = getSession().createQuery(query).setParameter("p2", Long.valueOf(cityId));
-		if(!complaintId.equals("0")) querySql.setParameter("p1", Long.parseLong(complaintId));
+		Query querySql = getSession().createQuery(query).setParameter("p1", Long.valueOf(cityId));
+		if(!complaintId.equals("0")) querySql.setParameter("p2", Long.parseLong(complaintId));
 		
 		List<ComplaintRegistration> complaintList =querySql.setFirstResult(0).setMaxResults(10).list();
 		return complaintList.toArray(new ComplaintRegistration[complaintList.size()]);

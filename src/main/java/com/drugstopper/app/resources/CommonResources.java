@@ -21,7 +21,6 @@ public class CommonResources extends RestResource {
 	private JsonResponse jsonResponse;
 	
 	@RequestMapping(value = "/v1.0/anyUpdate", produces={"application/json"},
-			consumes={"application/x-www-form-urlencoded"},
 			method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String,Object> anyUpdate() throws Exception {

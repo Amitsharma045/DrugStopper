@@ -1,14 +1,20 @@
 package com.drugstopper.app.resources;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -31,8 +37,7 @@ import com.drugstopper.app.util.ImageUtil;
 
 @Configuration
 @Controller
-@RequestMapping(value = "/drugStopper/api/")
-@PropertySource("file:"+Constants.IMAGE_PROPERTY_LOC)
+@RequestMapping(value = "/drugstopper/api")
 public class ImagesApi extends RestResource{
 	
 	private  String UPLOADED_FOLDER = Constants.STATIC_IMAGE_LOC;
@@ -44,6 +49,7 @@ public class ImagesApi extends RestResource{
 	@Autowired
     private Environment env;
 	
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/v1.0/getImagesName", produces={"application/json"},
 			method = RequestMethod.GET)
 	@ResponseBody
@@ -52,15 +58,15 @@ public class ImagesApi extends RestResource{
 		File[] files;
 		List<Image> imageNameList=new ArrayList<>();
 		FileFilter swingFilter = new FileNameExtensionFilter("jpeg files", "jpg","jpeg");
+		Properties props = new Properties();
+		FileInputStream input = new FileInputStream(new File(Constants.IMAGE_PROPERTY_LOC));
+		props.load(new InputStreamReader(input, Charset.forName("UTF-8")));
+
 		try {
 		java.io.FileFilter ioFilter = file -> swingFilter.accept(file);
 		files=new File(UPLOADED_FOLDER).listFiles(ioFilter); 
-		for (File file : files) {
-			if(env.containsProperty(file.getName()))
-				imageNameList.add(new Image(file.getName(),env.getProperty(file.getName())));
-			else
-				imageNameList.add(new Image(file.getName(), env.getProperty("default")));
-		}
+		for (File file : files) 
+			imageNameList.add(new Image(file.getName(),props.getProperty(file.getName() , env.getProperty("default"))));
 		} catch(Exception ex) {
 			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
 			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
@@ -69,53 +75,9 @@ public class ImagesApi extends RestResource{
 		}
 		jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
 		jsonResponse.setMessage(ConstantProperty.SUCCESSFUL_SAVED);
+		Collections.sort(imageNameList);
 		jsonResponse.setImageList(imageNameList);
 		return sendResponse(jsonResponse);
 		
-	}
-	
-	@RequestMapping(value = "/uploadImage", produces={"application/json"},
-			method = RequestMethod.POST)
-	@ResponseBody
-	public HashMap<String,Object> singleFileUpload(@RequestParam("file") MultipartFile file,
-												   @RequestParam("desc") String desc) throws Exception {
-		JsonResponse jsonResponse = new JsonResponse();
-		try {
-			if (!isUserAdmin()) {
-				jsonResponse.setStatusCode(ConstantProperty.UNAUTHORIZED);
-				jsonResponse.setMessage(ConstantProperty.NOT_RESISTERED_USER);
-				log(clazz, ConstantProperty.NOT_RESISTERED_USER, ConstantProperty.LOG_ERROR);
-				return sendResponse(jsonResponse);
-			}
-			if (file.isEmpty()) {
-				jsonResponse.setStatusCode(ConstantProperty.FILE_NOT_EXIST);
-				jsonResponse.setMessage("Please select a file to upload");
-				log(clazz, "Please select a file to upload", ConstantProperty.LOG_ERROR);
-				return sendResponse(jsonResponse);
-			}
-
-			// Get the file and save it somewhere
-			String fileName = UPLOADED_FOLDER + file.getOriginalFilename().replaceAll(" ", "");
-			byte[] bytes = file.getBytes();
-			Path path = Paths.get(fileName);
-			if (Files.notExists(Paths.get(fileName))) {
-				Files.write(path, bytes);
-				ImageUtil.writePropertiesFile(fileName.substring(fileName.lastIndexOf('/') + 1), desc);
-				jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
-				jsonResponse.setMessage("Successfully uploaded the image");
-				return sendResponse(jsonResponse);
-			} else {
-				jsonResponse.setStatusCode(ConstantProperty.FILE_OVERRIDE_ERROR); 
-				jsonResponse.setMessage("Please change the file name");
-				log(clazz, "Please change the file name", ConstantProperty.LOG_ERROR);
-				return sendResponse(jsonResponse);
-			}  
-		} catch (Exception e) { 
-			e.printStackTrace();
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			log(clazz, e.getMessage(), ConstantProperty.LOG_ERROR);
-			return sendResponse(jsonResponse);
-		}
 	}
 }

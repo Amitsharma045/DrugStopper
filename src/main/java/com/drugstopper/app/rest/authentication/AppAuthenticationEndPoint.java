@@ -46,7 +46,7 @@ import com.drugstopper.app.smsapi.sendSMS;
  *
  */
 @Controller
-@RequestMapping(value = "/authentication")
+@RequestMapping(value = "/drugstopper/authentication")
 public class AppAuthenticationEndPoint extends RestResource {
 	
 	private Class clazz = AppAuthenticationEndPoint.class;
@@ -66,7 +66,6 @@ public class AppAuthenticationEndPoint extends RestResource {
 	private JsonResponse jsonResponse;
 	
 	@RequestMapping(value = "/v1.0/login", produces={"application/json"},
-			consumes={"multipart/form-data"},
 			method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,Object> authenticateUser(HttpServletRequest request) throws Exception {
@@ -82,7 +81,7 @@ public class AppAuthenticationEndPoint extends RestResource {
 				jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
 				jsonResponse.setMessage(ConstantProperty.OTP_SENT);
 				String messageBody = "Silent Reaction OTP Verification Code: "+otp+". Do not share it or"
-						+ " use it elsewhere ";
+						+ " use it elsewhere.";
 				smsStatus = sendSMS.sendSms(phoneNumber, messageBody);
 				if(!smsStatus.get(ConstantProperty.STATUS_CODE).equals(ConstantProperty.OK_STATUS)) {
 					jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
@@ -106,8 +105,7 @@ public class AppAuthenticationEndPoint extends RestResource {
 		return sendResponse(jsonResponse);
 	}
 
-	@RequestMapping(value = "/v1.0/validate", produces = { "application/json" }, consumes = {
-			"multipart/form-data" }, method = RequestMethod.POST)
+	@RequestMapping(value = "/v1.0/validate", produces = { "application/json" }, method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String, Object> validateOtp(HttpServletRequest request)
 			throws Exception {
@@ -167,7 +165,6 @@ public class AppAuthenticationEndPoint extends RestResource {
 	}
 
 	@RequestMapping(value = "/v1.0/sso/google", produces={"application/json"},
-			consumes={"multipart/form-data"},
 			method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,Object> authenticateUserWithGoogle(HttpServletRequest request) throws Exception {
@@ -237,7 +234,6 @@ public class AppAuthenticationEndPoint extends RestResource {
 	}
 	
 	@RequestMapping(value = "/v1.0/sso/facebook", produces={"application/json"},
-			consumes={"multipart/form-data"},
 			method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,Object> authenticateUserWithFacebook(HttpServletRequest request) throws Exception {

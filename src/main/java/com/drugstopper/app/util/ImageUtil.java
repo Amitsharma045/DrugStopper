@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +21,10 @@ public class ImageUtil {
             Properties configProperty = new Properties();
             File file = new File(Constants.IMAGE_PROPERTY_LOC);
             fileIn = new FileInputStream(file);
-            configProperty.load(fileIn);
+            configProperty.load(new InputStreamReader(fileIn, Charset.forName("UTF-8")));
             configProperty.setProperty(key, data);
             fileOut = new FileOutputStream(file);
-            configProperty.store(fileOut, "sample properties");
-
+            configProperty.store(new OutputStreamWriter(fileOut, "UTF-8"), "sample properties");
         } catch (Exception ex) {
         	System.out.println(ex);
         } finally {

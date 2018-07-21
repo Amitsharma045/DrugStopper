@@ -6,7 +6,7 @@ import java.io.Serializable;
  * @author rpsingh
  *
  */
-public class Image implements Serializable {
+public class Image implements Serializable , Comparable{
 	
 	/**
 	 * 
@@ -34,5 +34,10 @@ public class Image implements Serializable {
 		this.name = name;
 		this.desc = desc;
 	}
+	@Override
+	public int compareTo(Object o) {
+		return this.getName().compareToIgnoreCase(((Image) o).getName());
+	}
+	
 	
 }

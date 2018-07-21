@@ -30,7 +30,7 @@ import io.jsonwebtoken.Claims;
  * @author rpsingh
  *
  */
-@WebFilter(urlPatterns = "/drugstopper/api/*")
+@WebFilter(urlPatterns = "/drugstopper/admin/*")
 public class AppAdminAuthenticationFilter implements Filter {
  
 	private Class clazz = AppAdminAuthenticationFilter.class;
@@ -73,8 +73,12 @@ public class AppAdminAuthenticationFilter implements Filter {
 				abortWithErrorStatus(httpservletResponse, HttpServletResponse.SC_UNAUTHORIZED, "InValid Token");
 				return;
 			}
-
-			filterChain.doFilter(servletRequest, servletResponse);
+			if(role.equals("Admin"))
+				filterChain.doFilter(servletRequest, servletResponse);
+			else {
+				abortWithErrorStatus(httpservletResponse, HttpServletResponse.SC_UNAUTHORIZED, "InValid Token");
+				return;
+			}
 		} catch(Exception ex) {
 			abortWithErrorStatus(httpservletResponse, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
 			log(clazz, ex.getMessage(), ConstantProperty.LOG_ERROR);

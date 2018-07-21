@@ -22,6 +22,7 @@ import com.drugstopper.app.bean.LocationBean;
 import com.drugstopper.app.entity.AttachmentDetail;
 import com.drugstopper.app.entity.ComplaintRegistration;
 import com.drugstopper.app.entity.Location;
+import com.drugstopper.app.entity.User;
 import com.drugstopper.app.json.JsonResponse;
 import com.drugstopper.app.property.ConstantProperty;
 import com.drugstopper.app.rest.RestResource;
@@ -62,7 +63,7 @@ public class ComplaintResource  extends RestResource {
 		try {
 			ComplaintRegistration complaintRegistration = new Gson().fromJson(dataJson, ComplaintRegistration.class);
 			AttachmentDetail [] attachmentDetails = new AttachmentDetail[uploadedFiles.length];
-			if(!validateFiles(uploadedFiles,attachmentDetails,jsonResponse)) {
+			if(attachmentDetails.length>0 && !validateFiles(uploadedFiles,attachmentDetails,jsonResponse)) {
 				jsonResponse.setStatusCode(ConstantProperty.INVALID_FILE);
 				jsonResponse.setMessage(ConstantProperty.INVALID_FILE_ERROR);
 				log(clazz, ConstantProperty.INVALID_FILE_ERROR, ConstantProperty.LOG_DEBUG);
@@ -70,6 +71,9 @@ public class ComplaintResource  extends RestResource {
 			}
 			if(complaintRegistration != null) { 
 				System.out.println(complaintRegistration.toString());
+				User appUser = new User();
+				appUser.setId(getUserId());
+				complaintRegistration.setUser(appUser);
 				ComplaintRegistration savedComplaint=complaintManager.saveComplaint(complaintRegistration);
 				if(savedComplaint!=null && savedComplaint.getId()!=0) {
 					if(attachmentDetails.length>0)
@@ -102,7 +106,6 @@ public class ComplaintResource  extends RestResource {
 	}
 	
 	@RequestMapping(value = "/v1.0/getAll", produces={"application/json"},
-			consumes={"application/x-www-form-urlencoded"},
 			method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String,Object> fetchComplaint() throws Exception {
@@ -125,7 +128,6 @@ public class ComplaintResource  extends RestResource {
 	}
 	
 	@RequestMapping(value = "/v1.0/getAll/nextList", produces={"application/json"},
-			consumes={"multipart/form-data"},
 			method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,Object> fetchComplaintNextList(HttpServletRequest request) throws Exception {
@@ -154,95 +156,72 @@ public class ComplaintResource  extends RestResource {
 		return sendResponse(jsonResponse);
 	}
 
-	
-	@RequestMapping(value = "/v1.0/getByState", produces={"application/json"},
-			consumes={"multipart/form-data"},
+	@RequestMapping(value = "/v1.0/searchByLocation", produces={"application/json"},
 			method = RequestMethod.POST)
 	@ResponseBody
-	public HashMap<String,Object> fetchComplaintSearchByState(HttpServletRequest request) throws Exception {
+	public HashMap<String,Object> fetchComplaintSearchByLocation(HttpServletRequest request) throws Exception {
 		String stateId = request.getParameter(ConstantProperty.STATE_ID);
-		jsonResponse = new JsonResponse();
-		if(stateId == null) {
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			log(clazz, ConstantProperty.STATE_ID+" Null Value", ConstantProperty.LOG_DEBUG);
-			return sendResponse(jsonResponse);
-		}
-		try {
-			Long.valueOf(stateId);
-
-			ComplaintRegistration[] complaintList = complaintManager.getComplaintsByState(stateId, String.valueOf(0));
-			ComplaintBean[] list = getComplaintList(complaintList);
-			jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
-			jsonResponse.setMessage(ConstantProperty.SUCCESSFUL_PROCESSED);
-			jsonResponse.setComplaintList(list);
-			jsonResponse.setTotalCounts(String.valueOf(complaintManager.getTotalComplaintCountByState(stateId)));
-		} catch (Exception ex) {
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			log(clazz, ex.getMessage(), ConstantProperty.LOG_ERROR);
-			return sendResponse(jsonResponse);
-		}
-		return sendResponse(jsonResponse);
-	}
-	
-	@RequestMapping(value = "/v1.0/getByState/nextList", produces={"application/json"},
-			consumes={"multipart/form-data"},
-			method = RequestMethod.POST)
-	@ResponseBody
-	public HashMap<String,Object> fetchComplaintSearchByStateNextList(HttpServletRequest request) throws Exception {
-		String stateId = request.getParameter(ConstantProperty.STATE_ID);
-		String lastId = request.getParameter(ConstantProperty.LAST_ID);
-		jsonResponse = new JsonResponse();
-
-		if(stateId == null || lastId == null) {
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			log(clazz, ConstantProperty.STATE_ID+" or "+ConstantProperty.LAST_ID+" Null Value", ConstantProperty.LOG_DEBUG);
-			return sendResponse(jsonResponse);
-		}
-		try {
-			Long.valueOf(stateId);
-			Long.valueOf(lastId);
-
-			ComplaintRegistration[] complaintList = complaintManager.getComplaintsByState(stateId, lastId);
-			ComplaintBean[] list = getComplaintList(complaintList);
-			jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
-			jsonResponse.setMessage(ConstantProperty.SUCCESSFUL_PROCESSED);
-			jsonResponse.setComplaintList(list);
-		} catch (Exception ex) {
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			log(clazz, ex.getMessage(), ConstantProperty.LOG_ERROR);
-			return sendResponse(jsonResponse);
-		}
-		return sendResponse(jsonResponse);
-	}
-
-	
-	@RequestMapping(value = "/v1.0/getByDistrict", produces={"application/json"},
-			consumes={"multipart/form-data"},
-			method = RequestMethod.POST)
-	@ResponseBody
-	public HashMap<String,Object> fetchComplaintSearchByDistrict(HttpServletRequest request) throws Exception {
 		String districtId = request.getParameter(ConstantProperty.DISTRICT_ID);
+		String cityId = request.getParameter(ConstantProperty.CITY_ID);
 		jsonResponse = new JsonResponse();
-		if(districtId == null) {
+		try {
+			if(cityId != null && !("".equals(cityId))) {
+				Long.valueOf(cityId);
+				ComplaintRegistration[] complaintList = complaintManager.getComplaintsByCity(cityId, String.valueOf(0));
+				jsonResponse = getJsonObject(jsonResponse, complaintList, String.valueOf(complaintManager.getTotalComplaintCountByCity(cityId)));
+			} else if(districtId != null && !("".equals(districtId))) {
+				Long.valueOf(districtId);
+				ComplaintRegistration[] complaintList = complaintManager.getComplaintsByDistrict(districtId, String.valueOf(0));
+				jsonResponse = getJsonObject(jsonResponse, complaintList, String.valueOf(complaintManager.getTotalComplaintCountByDistrict(districtId)));
+			} else if(stateId != null && !("".equals(stateId))) {
+				Long.valueOf(stateId);
+				ComplaintRegistration[] complaintList = complaintManager.getComplaintsByState(stateId, String.valueOf(0));
+				jsonResponse = getJsonObject(jsonResponse, complaintList, String.valueOf(complaintManager.getTotalComplaintCountByState(stateId)));
+			} else {
+				ComplaintRegistration[] complaintList = complaintManager.getAllComplaints(String.valueOf(0));
+				jsonResponse = getJsonObject(jsonResponse, complaintList, String.valueOf(complaintManager.getTotalComplaintCount()));
+			}
+		} catch (Exception ex) {
 			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
 			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			log(clazz, ConstantProperty.DISTRICT_ID+" Null Value", ConstantProperty.LOG_DEBUG);
-
+			log(clazz, ex.getMessage(), ConstantProperty.LOG_ERROR);
 			return sendResponse(jsonResponse);
 		}
-		try {
-			Long.valueOf(districtId);
+		return sendResponse(jsonResponse);
+	}
 
-			ComplaintRegistration[] complaintList = complaintManager.getComplaintsByDistrict(districtId, String.valueOf(0));
-			ComplaintBean[] list = getComplaintList(complaintList);
-			jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
-			jsonResponse.setMessage(ConstantProperty.SUCCESSFUL_PROCESSED);
-			jsonResponse.setComplaintList(list);
-			jsonResponse.setTotalCounts(String.valueOf(complaintManager.getTotalComplaintCountByDistrict(districtId)));
+	@RequestMapping(value = "/v1.0/searchByLocation/nextList", produces={"application/json"},
+			method = RequestMethod.POST)
+	@ResponseBody
+	public HashMap<String,Object> fetchComplaintSearchByLocationNextList(HttpServletRequest request) throws Exception {
+		String stateId = request.getParameter(ConstantProperty.STATE_ID);
+		String districtId = request.getParameter(ConstantProperty.DISTRICT_ID);
+		String cityId = request.getParameter(ConstantProperty.CITY_ID);
+		String lastId = request.getParameter(ConstantProperty.LAST_ID);
+		
+		jsonResponse = new JsonResponse();
+		try {
+			Long.valueOf(lastId);
+			if(cityId != null  && !("".equals(cityId))) {
+				Long.valueOf(cityId);
+				ComplaintRegistration[] complaintList = complaintManager.getComplaintsByCity(cityId, lastId);
+				jsonResponse = getJsonObject(jsonResponse, complaintList, null);
+			} else if(districtId != null  && !("".equals(districtId))) {
+				Long.valueOf(districtId);
+				ComplaintRegistration[] complaintList = complaintManager.getComplaintsByDistrict(districtId, lastId);
+				jsonResponse = getJsonObject(jsonResponse, complaintList, null);
+			} else if(stateId != null  && !("".equals(stateId))) {
+				Long.valueOf(stateId);
+				ComplaintRegistration[] complaintList = complaintManager.getComplaintsByState(stateId, lastId);
+				jsonResponse = getJsonObject(jsonResponse, complaintList, null);
+			} else {
+				ComplaintRegistration[] complaintList = complaintManager.getAllComplaints(String.valueOf(lastId));
+				jsonResponse = getJsonObject(jsonResponse, complaintList, null);
+				jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
+				jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
+				log(clazz, " LocationId or "+ConstantProperty.LAST_ID+" can't be  null", ConstantProperty.LOG_DEBUG);
+				return sendResponse(jsonResponse);
+			}
 		} catch (Exception ex) {
 			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
 			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
@@ -253,7 +232,6 @@ public class ComplaintResource  extends RestResource {
 	}
 	
 	@RequestMapping(value = "/v1.0/getComplaint/{complaintId}", produces={"application/json"},
-			consumes={"application/x-www-form-urlencoded"},
 			method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String,Object> fetchComplaintDetail(@PathVariable("complaintId") String complaintId) throws Exception {
@@ -267,119 +245,7 @@ public class ComplaintResource  extends RestResource {
 		return sendResponse(jsonResponse);
 	}  
 	
-	@RequestMapping(value = "/v1.0/getByDistrict/nextList", produces={"application/json"},
-			consumes={"multipart/form-data"},
-			method = RequestMethod.POST)
-	@ResponseBody 
-	public HashMap<String,Object> fetchComplaintSearchByDistrictNextList(HttpServletRequest request) throws Exception {
-		String districtId = request.getParameter(ConstantProperty.DISTRICT_ID);
-		String lastId = request.getParameter(ConstantProperty.LAST_ID);
-		jsonResponse = new JsonResponse();
-		if(districtId == null || lastId == null) {
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			log(clazz, ConstantProperty.DISTRICT_ID+" or "+ConstantProperty.LAST_ID+" Null Value", ConstantProperty.LOG_DEBUG);
-			return sendResponse(jsonResponse);
-		}
-		try {
-			Long.valueOf(districtId);
-			Long.valueOf(lastId);
-
-			ComplaintRegistration[] complaintList = complaintManager.getComplaintsByDistrict(districtId, lastId);
-			ComplaintBean[] list = getComplaintList(complaintList);
-			jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
-			jsonResponse.setMessage(ConstantProperty.SUCCESSFUL_PROCESSED);
-			jsonResponse.setComplaintList(list);
-		} catch (Exception ex) {
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			log(clazz, ex.getMessage(), ConstantProperty.LOG_ERROR);
-			return sendResponse(jsonResponse);
-		}
-
-		return sendResponse(jsonResponse);
-	}
-
-	@RequestMapping(value = "/v1.0/getByCity", produces={"application/json"},
-			consumes={"multipart/form-data"},
-			method = RequestMethod.POST)
-	@ResponseBody
-	public HashMap<String,Object> fetchComplaintSearchByCity(HttpServletRequest request) throws Exception {
-		String cityId = request.getParameter(ConstantProperty.CITY_ID);
-		jsonResponse = new JsonResponse();
-		if(cityId == null) {
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			log(clazz, ConstantProperty.DISTRICT_ID+" Null Value", ConstantProperty.LOG_DEBUG);
-			return sendResponse(jsonResponse);
-		}
-		try {
-			Long.valueOf(cityId);
-
-			ComplaintRegistration[] complaintList = complaintManager.getComplaintsByCity(cityId, String.valueOf(0));
-			ComplaintBean[] list = getComplaintList(complaintList);
-			jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
-			jsonResponse.setMessage(ConstantProperty.SUCCESSFUL_PROCESSED);
-			jsonResponse.setComplaintList(list);
-			jsonResponse.setTotalCounts(String.valueOf(complaintManager.getTotalComplaintCountByCity(cityId)));
-		} catch (Exception ex) {
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			log(clazz, ex.getMessage(), ConstantProperty.LOG_ERROR);
-			return sendResponse(jsonResponse);
-		}
-
-		return sendResponse(jsonResponse);
-	}
-	
-	@RequestMapping(value = "/v1.0/getByCity/nextList", produces={"application/json"},
-			consumes={"multipart/form-data"},
-			method = RequestMethod.POST)
-	@ResponseBody
-	public HashMap<String,Object> fetchComplaintSearchByCityNextList(HttpServletRequest request) throws Exception {
-		String cityId = request.getParameter(ConstantProperty.CITY_ID);
-		String lastId = request.getParameter(ConstantProperty.LAST_ID);
-		jsonResponse = new JsonResponse();
-		if(cityId == null || lastId == null) {
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			log(clazz, ConstantProperty.CITY_ID+" or "+ConstantProperty.LAST_ID+" Null Value", ConstantProperty.LOG_DEBUG);
-			return sendResponse(jsonResponse);
-		}
-		try {
-			Long.valueOf(cityId);
-			Long.valueOf(lastId);
-
-			ComplaintRegistration[] complaintList = complaintManager.getComplaintsByCity(cityId, lastId);
-			ComplaintBean[] list = getComplaintList(complaintList);
-			jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
-			jsonResponse.setMessage(ConstantProperty.SUCCESSFUL_PROCESSED);
-			jsonResponse.setComplaintList(list);
-		} catch (Exception ex) {
-			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-			log(clazz, ex.getMessage(), ConstantProperty.LOG_ERROR);
-			return sendResponse(jsonResponse);
-		}
-
-		return sendResponse(jsonResponse);
-	}
-	
-	
-	private ComplaintBean getComplaint(ComplaintRegistration registration) throws Exception {
-		ComplaintBean complaintBean = new ComplaintBean();
-		complaintBean.setId(registration.getId());
-		complaintBean.setComplaintId(registration.getComplaintId());
-		complaintBean.setComplaintAgainst(registration.getComplaintAgainst());
-		complaintBean.setDate(registration.getDate());
-		complaintBean.setState(registration.getState().getName());
-		complaintBean.setDistrict(registration.getDistrict().getName());
-		complaintBean.setCity(registration.getCity().getName());
-		return complaintBean;
-	}
-	
 	@RequestMapping(value = "/v1.0/searchComplaintAgainst", produces={"application/json"},
-			consumes={"application/x-www-form-urlencoded"},
 			method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String,Object> searchComplaintAgainstByLocation(@RequestParam("complaintAgainst") String complaintAgainst, 
@@ -407,7 +273,19 @@ public class ComplaintResource  extends RestResource {
 
 		return sendResponse(jsonResponse);
 	}
-	
+
+	private ComplaintBean getComplaint(ComplaintRegistration registration) throws Exception {
+		ComplaintBean complaintBean = new ComplaintBean();
+		complaintBean.setId(registration.getId());
+		complaintBean.setComplaintId(registration.getComplaintId());
+		complaintBean.setComplaintAgainst(registration.getComplaintAgainst());
+		complaintBean.setDate(registration.getDate());
+		complaintBean.setState(registration.getState().getName());
+		complaintBean.setDistrict(registration.getDistrict().getName());
+		complaintBean.setCity(registration.getCity().getName());
+		return complaintBean;
+	}
+
 	private boolean validateFiles(MultipartFile[] uploadedFiles, AttachmentDetail[] attachmentDetails, 
 								  JsonResponse jsonResponse) throws Exception
 	{
@@ -464,8 +342,6 @@ public class ComplaintResource  extends RestResource {
 		return complaintlist.toArray(new ComplaintBean[complaintlist.size()]);
 	}
 	
-	
-	
 	public List<AttachmentBean> getAttachmentBeanFromDetail(List<AttachmentDetail> attachments) throws Exception {
 		List<AttachmentBean> attachmentBeans = new ArrayList<>();
 		for (AttachmentDetail attachmentDetail : attachments) {
@@ -477,6 +353,17 @@ public class ComplaintResource  extends RestResource {
 			attachmentBeans.add(bean);
 		}
 		return attachmentBeans;
+	}
+	
+	private JsonResponse getJsonObject(JsonResponse jsonResponse, ComplaintRegistration[] complaintList, 
+			String totalCount) throws Exception
+	{
+		jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
+		jsonResponse.setMessage(ConstantProperty.SUCCESSFUL_PROCESSED);
+		jsonResponse.setComplaintList(getComplaintList(complaintList));
+		if (totalCount != null) jsonResponse.setTotalCounts(totalCount);
+
+		return jsonResponse;
 	}
 	
 

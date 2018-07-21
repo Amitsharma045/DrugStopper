@@ -65,6 +65,9 @@ public abstract class RestResource {
 		return false;
 	}
 	
+	public Long getUserId() {
+		return Long.parseLong(request_.getAttribute("appUserId").toString());
+	}
 	protected void log(Class clazz, String message, String tag) {
 		Logger logger = LoggerFactory.getLogger(clazz);
 		if(ConstantProperty.LOG_INFO.equals(tag)) {

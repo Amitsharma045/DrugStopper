@@ -44,7 +44,6 @@ public class LocationResource extends RestResource {
 	
 
 	@RequestMapping(value = "/v1.0/getCategory", produces={"application/json"},
-			consumes={"application/x-www-form-urlencoded"},
 			method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String,Object> fetchCategory() throws Exception {
@@ -57,7 +56,6 @@ public class LocationResource extends RestResource {
 	}
 	
 	@RequestMapping(value = "/v1.0/searchBy", produces={"application/json"},
-			consumes={"application/x-www-form-urlencoded"},
 			method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String,Object> searchByName(@RequestParam("name") String name, 
@@ -89,7 +87,6 @@ public class LocationResource extends RestResource {
 	
 	
 	@RequestMapping(value = "/v1.0/getState", produces={"application/json"},
-			consumes={"application/x-www-form-urlencoded"},
 			method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String,Object> fetchState() throws Exception {
@@ -110,7 +107,6 @@ public class LocationResource extends RestResource {
 	}
 	
 	@RequestMapping(value = "/v1.0/getDistrict", produces={"application/json"},
-			consumes={"multipart/form-data"},
 			method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,Object> fetchDistrictById(HttpServletRequest request) throws Exception {
@@ -142,7 +138,6 @@ public class LocationResource extends RestResource {
 	
 	
 	@RequestMapping(value = "/v1.0/getCity", produces={"application/json"},
-			consumes={"multipart/form-data"},
 			method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,Object> fetchCityById(HttpServletRequest request) throws Exception {
