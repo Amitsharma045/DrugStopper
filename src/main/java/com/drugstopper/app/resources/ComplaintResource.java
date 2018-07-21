@@ -217,10 +217,6 @@ public class ComplaintResource  extends RestResource {
 			} else {
 				ComplaintRegistration[] complaintList = complaintManager.getAllComplaints(String.valueOf(lastId));
 				jsonResponse = getJsonObject(jsonResponse, complaintList, null);
-				jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
-				jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
-				log(clazz, " LocationId or "+ConstantProperty.LAST_ID+" can't be  null", ConstantProperty.LOG_DEBUG);
-				return sendResponse(jsonResponse);
 			}
 		} catch (Exception ex) {
 			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
