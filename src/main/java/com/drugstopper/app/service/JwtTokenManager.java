@@ -24,4 +24,8 @@ public class JwtTokenManager {
 	public JwtToken getJwtTokenByAccessToken(String accessToken) {
 		return jwtTokenDAO.getJwtTokenByAccessToken(accessToken);
 	}
+
+	public boolean deleteToken(String accessToken) throws Exception {
+		return jwtTokenDAO.deleteToken(accessToken);
+	}
 }

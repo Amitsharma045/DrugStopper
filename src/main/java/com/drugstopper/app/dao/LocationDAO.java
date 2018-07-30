@@ -53,7 +53,7 @@ public class LocationDAO {
 									.createQuery("FROM Location lt WHERE lt.id IN ( SELECT lm.location.id FROM  LocationMapping lm"
 											   + " WHERE lm.parentLocation.id =:p1) ")
 									.setParameter("p1", Long.valueOf(id))
-									.setFirstResult(0).setMaxResults(10).list();
+									.setFirstResult(0).list();
 
 		return locationList.toArray(new Location[locationList.size()]);
 	}

@@ -83,18 +83,15 @@ public class ConstantProperty {
 	public static final String ATTACHMENT_LIST = "attachments";
 	public static final String IMAGE_LIST = "images";
 
-	
-	
-	
-	public static final String CLIENT_ID = "";
-
 	public static final String LOG_INFO = "INFO";
 	public static final String LOG_DEBUG = "DEBUG";
 	public static final String LOG_ERROR = "ERROR";
 	public static final String LOG_WARNING = "WARNING";
 	public static final String LOG_TRACE = "TRACE";
+	public static final String LOGOUT = "Successfully Logout";
 
-	
+	public static final String CLIENT_ID = "clientId";
+
 
 
 

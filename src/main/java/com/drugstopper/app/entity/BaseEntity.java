@@ -27,6 +27,15 @@ public class BaseEntity  implements Serializable {
 	@CreationTimestamp
 	private Date createdDate;
 
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+
 	@Column(name = "ModifiedDate")
 	@UpdateTimestamp
 	private Date modifiedDate;

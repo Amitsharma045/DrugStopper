@@ -34,9 +34,6 @@ public class ComplaintRegistration extends BaseEntity   implements Serializable 
 	@Column(name = "CR_ComplaintId")
 	private String complaintId;
 	
-	@Column(name = "CR_Date")
-	private Date date;
-	
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "CR_State", referencedColumnName = "id")
 	private Location state;
@@ -79,14 +76,6 @@ public class ComplaintRegistration extends BaseEntity   implements Serializable 
 
 	public void setComplaintId(String complaintId) {
 		this.complaintId = complaintId;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
 	}
 
 	public Location getState() {
@@ -155,7 +144,7 @@ public class ComplaintRegistration extends BaseEntity   implements Serializable 
 	
 	@Override
 	public String toString() {
-		return "ComplaintRegistration [id=" + id + ", complaintId=" + complaintId + ", date=" + date + ", state="
+		return "ComplaintRegistration [id=" + id + ", complaintId=" + complaintId + ", date=" + getCreatedDate() + ", state="
 				+ state + ", district=" + district + ", city=" + city + ", address=" + address + ", complaintTitle="
 				+ complaintTitle + ", complaintAgainst=" + complaintAgainst + ", complaintDescription="
 				+ complaintDescription + ", user=" + user + "]";

@@ -275,7 +275,7 @@ public class ComplaintResource  extends RestResource {
 		complaintBean.setId(registration.getId());
 		complaintBean.setComplaintId(registration.getComplaintId());
 		complaintBean.setComplaintAgainst(registration.getComplaintAgainst());
-		complaintBean.setDate(registration.getDate());
+		complaintBean.setDate(registration.getCreatedDate());
 		complaintBean.setState(registration.getState().getName());
 		complaintBean.setDistrict(registration.getDistrict().getName());
 		complaintBean.setCity(registration.getCity().getName());
@@ -328,7 +328,7 @@ public class ComplaintResource  extends RestResource {
 			complaintBean.setId(complaintRegistration.getId());
 			complaintBean.setComplaintId(complaintRegistration.getComplaintId());
 			complaintBean.setComplaintAgainst(complaintRegistration.getComplaintAgainst());
-			complaintBean.setDate(complaintRegistration.getDate());
+			complaintBean.setDate(complaintRegistration.getCreatedDate());
 			complaintBean.setState(complaintRegistration.getState().getName());
 			complaintBean.setDistrict(complaintRegistration.getDistrict().getName());
 			complaintBean.setCity(complaintRegistration.getCity().getName());

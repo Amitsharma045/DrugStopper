@@ -94,4 +94,16 @@ public class JwtTokenDAO {
 		}
 		return false;
 	}
+
+	public boolean deleteToken(String accessToken) throws Exception {
+		Query query = getSession().createQuery("delete from JwtToken jt where jt.accessToken = :p1");
+		query.setParameter("p1",accessToken);
+		 
+		int result = query.executeUpdate();
+		 
+		if (result > 0) {
+			return true;
+		}
+		return false;
+	}
 }

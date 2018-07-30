@@ -170,11 +170,13 @@ public class AppAuthenticationEndPoint extends RestResource {
 	public HashMap<String,Object> authenticateUserWithGoogle(HttpServletRequest request) throws Exception {
 		jsonResponse = new JsonResponse();
 		String token = request.getParameter(ConstantProperty.GMAIL_SIGNIN_TOKEN);
+		String clientId = request.getParameter(ConstantProperty.CLIENT_ID);
+
 		try {
 			final NetHttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
 			final JacksonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 			GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
-					.setAudience(Collections.singletonList(ConstantProperty.CLIENT_ID))
+					.setAudience(Collections.singletonList(clientId))
 					.build();
 			final GoogleIdToken googleIdToken = verifier.verify(token);
 
@@ -232,6 +234,8 @@ public class AppAuthenticationEndPoint extends RestResource {
 		}
 		return sendResponse(jsonResponse);
 	}
+	
+	
 	
 	@RequestMapping(value = "/v1.0/sso/facebook", produces={"application/json"},
 			method = RequestMethod.POST)
@@ -291,6 +295,38 @@ public class AppAuthenticationEndPoint extends RestResource {
 		}
 		
         return sendResponse(jsonResponse);
+	}
+	
+	@RequestMapping(value = "/v1.0/logout", produces={"application/json"},
+			method = RequestMethod.POST)
+	@ResponseBody
+	public HashMap<String,Object> logout(HttpServletRequest request) throws Exception {
+		jsonResponse = new JsonResponse();
+		try {
+			String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+			if (authorizationHeader == null) {
+				jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
+				jsonResponse.setMessage("Empty Authorization Token");
+				return sendResponse(jsonResponse);
+			}
+			String token = authorizationHeader.substring(JwtUtil.AUTHENTICATION_SCHEME.length()+1).trim();
+			boolean flag = jwtTokenManager.deleteToken(token);
+			if (flag) {
+				jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
+				jsonResponse.setMessage(ConstantProperty.LOGOUT);
+			} else {
+				jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
+				jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
+				log(clazz, "Not Able To Logout Successful", ConstantProperty.LOG_ERROR);
+			}
+
+		} catch(Exception ex) {
+			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
+			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);
+			log(clazz, ex.getMessage(), ConstantProperty.LOG_ERROR);
+			return sendResponse(jsonResponse);
+		}
+		return sendResponse(jsonResponse);
 	}
 
 
