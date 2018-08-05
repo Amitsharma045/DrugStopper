@@ -53,7 +53,7 @@ public class ImagesApi extends RestResource{
 	@RequestMapping(value = "/v1.0/getImagesName", produces={"application/json"},
 			method = RequestMethod.GET)
 	@ResponseBody
-	public HashMap<String,Object> getImageDescList(HttpServletRequest request) throws IOException, URISyntaxException, Exception  {
+	public HashMap<String,Object> getImageDescList(@RequestParam("lang") String lang, HttpServletRequest request) throws IOException, URISyntaxException, Exception  {
 		jsonResponse=new JsonResponse();
 		File[] files;
 		List<Image> imageNameList=new ArrayList<>();
@@ -66,7 +66,7 @@ public class ImagesApi extends RestResource{
 		java.io.FileFilter ioFilter = file -> swingFilter.accept(file);
 		files=new File(UPLOADED_FOLDER).listFiles(ioFilter); 
 		for (File file : files) 
-			imageNameList.add(new Image(file.getName(),props.getProperty(file.getName() , env.getProperty("default"))));
+			imageNameList.add(new Image(file.getName(),props.getProperty(file.getName()+"_"+lang , env.getProperty("default"+lang))));
 		} catch(Exception ex) {
 			jsonResponse.setStatusCode(ConstantProperty.SERVER_ERROR);
 			jsonResponse.setMessage(ConstantProperty.INTERNAL_SERVER_ERROR);

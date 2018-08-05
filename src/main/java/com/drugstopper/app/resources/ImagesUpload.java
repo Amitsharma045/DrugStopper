@@ -34,7 +34,7 @@ public class ImagesUpload extends RestResource{
 			method = RequestMethod.PUT)
 	@ResponseBody
 	public HashMap<String,Object> singleFileUpload(@RequestParam("file") MultipartFile file,
-												   @RequestParam("desc") String desc) throws Exception {
+												   @RequestParam("desc") String[] desc) throws Exception {
 			jsonResponse = new JsonResponse();
 			if (file.isEmpty()) {
 				jsonResponse.setStatusCode(ConstantProperty.INVALID_FILE);
@@ -49,7 +49,12 @@ public class ImagesUpload extends RestResource{
 			Path path = Paths.get(fileName);
 			if (Files.notExists(Paths.get(fileName))) {
 				Files.write(path, bytes);
-				ImageUtil.writePropertiesFile(fileName.substring(fileName.lastIndexOf('/') + 1), desc);
+				for(String description : desc) {
+					String [] split = description.split(":");
+					String lang="_"+split[0];
+					String property=split[1];
+					ImageUtil.writePropertiesFile(fileName.substring(fileName.lastIndexOf('/') + 1)+lang, property);
+				}
 				jsonResponse.setStatusCode(ConstantProperty.OK_STATUS);
 				jsonResponse.setMessage("Successfully uploaded the image");
 				return sendResponse(jsonResponse);

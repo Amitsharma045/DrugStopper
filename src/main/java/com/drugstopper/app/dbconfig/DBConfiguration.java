@@ -42,6 +42,17 @@ public class DBConfiguration {
 
 	@Value("${entitymanager.packagesToScan}")
 	private String PACKAGES_TO_SCAN;
+	
+	@Value("${hibernate.connection.characterEncoding}")
+	private String CHAR_ENCODING;
+	
+	@Value("${hibernate.connection.CharSet}")
+	private String CHAR_SET;
+	
+	@Value("${hibernate.connection.useUnicode}")
+	private String USE_UNICODE;
+	
+	
 
 	@Bean
 	public DataSource dataSource() {
@@ -62,6 +73,9 @@ public class DBConfiguration {
 		hibernateProperties.put("hibernate.dialect", DIALECT);
 		hibernateProperties.put("hibernate.show_sql", SHOW_SQL);
 		hibernateProperties.put("hibernate.hbm2ddl.auto", HBM2DDL_AUTO);
+		hibernateProperties.put("hibernate.connection.characterEncoding", CHAR_ENCODING);
+		hibernateProperties.put("hibernate.connection.CharSet", CHAR_SET);
+		hibernateProperties.put("hibernate.connection.useUnicode", USE_UNICODE);
 		sessionFactory.setHibernateProperties(hibernateProperties);
 
 		return sessionFactory;

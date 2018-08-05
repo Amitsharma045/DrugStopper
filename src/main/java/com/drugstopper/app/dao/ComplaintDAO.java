@@ -85,7 +85,7 @@ public class ComplaintDAO {
 	@SuppressWarnings("unchecked")
 	public String[] searchComplaintAgainstByLocation(String complaintAgainst, String locationId) throws Exception {
 		List<String> titleList = getSession()
-								.createQuery("SELECT cr.complaintAgainst FROM ComplaintRegistration cr WHERE cr.city.id =:p1"
+								.createQuery("SELECT DISTINCT cr.complaintAgainst FROM ComplaintRegistration cr WHERE cr.city.id =:p1"
 							   			   + " AND  UPPER(cr.complaintAgainst) LIKE :p2")
 								.setParameter("p1", Long.valueOf(locationId))
 								.setParameter("p2", complaintAgainst.toUpperCase()+"%")

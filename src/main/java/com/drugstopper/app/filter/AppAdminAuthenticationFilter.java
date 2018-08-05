@@ -73,8 +73,10 @@ public class AppAdminAuthenticationFilter implements Filter {
 				abortWithErrorStatus(httpservletResponse, HttpServletResponse.SC_UNAUTHORIZED, "InValid Token");
 				return;
 			}
-			if(role.equals("Admin"))
+			if(role.equals("Admin")) {
+				servletRequest.setCharacterEncoding("UTF-8");
 				filterChain.doFilter(servletRequest, servletResponse);
+			}
 			else {
 				abortWithErrorStatus(httpservletResponse, HttpServletResponse.SC_UNAUTHORIZED, "InValid Token");
 				return;

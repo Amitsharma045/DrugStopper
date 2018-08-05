@@ -73,6 +73,7 @@ public class AppAuthenticationFilter implements Filter {
 				abortWithErrorStatus(httpservletResponse, HttpServletResponse.SC_UNAUTHORIZED, "InValid Token");
 				return;
 			}
+			servletRequest.setCharacterEncoding("UTF-8");
 			filterChain.doFilter(servletRequest, servletResponse);
 		} catch(Exception ex) {
 			abortWithErrorStatus(httpservletResponse, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");

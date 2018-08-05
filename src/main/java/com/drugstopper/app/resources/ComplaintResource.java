@@ -8,12 +8,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.drugstopper.app.bean.AttachmentBean;
@@ -43,7 +47,6 @@ import com.google.gson.Gson;
 public class ComplaintResource  extends RestResource {
 
 	private Class clazz = ComplaintResource.class;
-
 	
 	@Autowired
 	private  ComplaintManager complaintManager;
